@@ -1,0 +1,38 @@
+# Standard ASP.NET Core / Visual Studio files to ignore
+
+## Build Artifacts ##
+[Bb]in/
+[Oo]bj/
+*.pdb
+*.suo
+*.user
+*.userosf
+*.psess
+*.vshost.*
+*.vspscc
+*.ncb
+*.sbr
+*.tlb
+*.tlh
+*.tmp
+*.bak
+*.old
+*.log
+
+## Databases ##
+# Local database files
+*.mdf
+*.ldf
+# SQLite database files
+*.db
+*.sqlite
+
+## Visual Studio / IDE ##
+.vs/
+*.vsp
+*.log
+*.vsmdi
+*.webtest
+TestResults/
+_ReSharper.*/
+*.[Dd]iagrams/

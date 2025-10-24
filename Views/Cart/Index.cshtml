@@ -1,0 +1,104 @@
+﻿@using EcommerceApp.Controllers
+@model List<CartItemDto>
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+    // Calculate totals for display
+    decimal subtotal = Model?.Sum(item => item.TotalPrice) ?? 0M; // Use null conditional for safety
+    // You might add taxes or shipping here:
+    decimal shipping = subtotal > 0 ? 10.00M : 0.00M;
+    decimal grandTotal = subtotal + shipping;
+}
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <h2 class="text-4xl font-bold text-gray-800 mb-8 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 mr-3 text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" /></svg>
+        Your Shopping Cart
+    </h2>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="text-center py-20 border-2 border-dashed border-gray-300 rounded-xl bg-white shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 mx-auto mb-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 9 12 4 7 9" /><line x1="12" x2="12" y1="4" y2="16" /></svg>
+            <p class="text-xl font-medium text-gray-700 mb-2">Your cart is empty.</p>
+            <p class="text-md text-gray-500 mb-6">Looks like you haven't added anything to your cart yet.</p>
+            <a href="/" class="inline-flex items-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg">
+                Start Shopping
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="bg-white shadow-xl rounded-xl overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                        <th class="px-6 py-3"></th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                @item.Name
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                $@item.Price.ToString("F2")
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                @item.Quantity
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold text-gray-900">
+                                $@item.TotalPrice.ToString("F2")
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <form asp-controller="Cart" asp-action="RemoveItem" method="post" onsubmit="return confirm('Are you sure you want to remove this item?');">
+                                    <input type="hidden" name="id" value="@item.ProductId" />
+                                    <button type="submit" class="text-red-600 hover:text-red-900 transition" aria-label="Remove item">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-8 flex justify-end">
+            <div class="w-full max-w-sm bg-white p-6 rounded-xl shadow-xl border border-gray-100">
+                <h3 class="text-xl font-bold mb-4 border-b pb-2 text-gray-800">Order Summary</h3>
+                <div class="space-y-2 text-gray-600">
+                    <div class="flex justify-between">
+                        <span>Subtotal</span>
+                        <span class="font-medium text-gray-900">$@subtotal.ToString("F2")</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Shipping Estimate</span>
+                        <span class="font-medium text-gray-900">$@shipping.ToString("F2")</span>
+                    </div>
+                    <div class="flex justify-between pt-4 border-t border-gray-200 text-xl font-bold text-indigo-700">
+                        <span>Order Total</span>
+                        <span>$@grandTotal.ToString("F2")</span>
+                    </div>
+                </div>
+
+                <button class="w-full mt-6 bg-green-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-green-700 transition duration-150 shadow-lg"
+                        onclick="alert('Checkout process starts here! This would redirect to a checkout form.');">
+                    Proceed to Checkout
+                </button>
+
+                <form asp-controller="Cart" asp-action="Clear" method="post" onsubmit="return confirm('Are you sure you want to clear your entire cart?');">
+                    <button type="submit" class="w-full mt-3 text-sm text-red-500 hover:text-red-700 transition">
+                        Clear Cart
+                    </button>
+                </form>
+            </div>
+        </div>
+    }
+</div>
